@@ -1,78 +1,76 @@
 import React from "react";
 import Chart, { Props } from "react-apexcharts";
 
+const generateData = () => {
+  const now = new Date();
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const todayEnd = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() + 1,
+  );
+  const data = [];
+
+  for (let i = 0; i < 5; i++) {
+    const start = new Date(
+      todayStart.getTime() -
+        Math.floor(Math.random() * 7) * 24 * 60 * 60 * 1000,
+    );
+    const end = new Date(
+      start.getTime() + Math.floor(Math.random() * 5) * 24 * 60 * 60 * 1000,
+    );
+    data.push({
+      x: `Task ${i + 1}`,
+      y: [start.getTime(), end.getTime()],
+    });
+  }
+  return data;
+};
+
+const data = generateData();
+const today = new Date().getTime();
+
 const state: Props["series"] = [
   {
-    name: "Series1",
-    data: [31, 40, 28, 51, 42, 109, 100],
-  },
-  {
-    name: "Series2",
-    data: [11, 32, 45, 32, 34, 52, 41],
+    data: data,
   },
 ];
 
 const options: Props["options"] = {
   chart: {
-    type: "area",
-    animations: {
-      easing: "linear",
-      speed: 300,
-    },
-    sparkline: {
-      enabled: false,
-    },
-    brush: {
-      enabled: false,
-    },
-    id: "basic-bar",
-    foreColor: "hsl(var(--nextui-default-800))",
-    stacked: true,
-    toolbar: {
-      show: false,
+    type: "rangeBar",
+  },
+  plotOptions: {
+    bar: {
+      horizontal: true,
     },
   },
-
   xaxis: {
-    categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999],
-    labels: {
-      // show: false,
-      style: {
-        colors: "hsl(var(--nextui-default-800))",
-      },
-    },
-    axisBorder: {
-      color: "hsl(var(--nextui-nextui-default-200))",
-    },
-    axisTicks: {
-      color: "hsl(var(--nextui-nextui-default-200))",
-    },
+    type: "datetime",
   },
-  yaxis: {
-    labels: {
-      style: {
-        // hsl(var(--nextui-content1-foreground))
-        colors: "hsl(var(--nextui-default-800))",
+  annotations: {
+    xaxis: [
+      {
+        x: today,
+        borderColor: "#00E396",
+        label: {
+          borderColor: "#00E396",
+          style: {
+            color: "#fff",
+            background: "#00E396",
+          },
+          text: "Today",
+        },
       },
-    },
+    ],
   },
   tooltip: {
-    enabled: false,
-  },
-  grid: {
-    show: true,
-    borderColor: "hsl(var(--nextui-default-200))",
-    strokeDashArray: 0,
-    position: "back",
-  },
-  stroke: {
-    curve: "smooth",
-    fill: {
-      colors: ["red"],
+    x: {
+      formatter: function (val) {
+        return new Date(val).toLocaleDateString();
+      },
     },
   },
-  // @ts-ignore
-  markers: false,
 };
 
 export const Steam = () => {
@@ -80,7 +78,12 @@ export const Steam = () => {
     <>
       <div className="w-full z-20">
         <div id="chart">
-          <Chart options={options} series={state} type="area" height={425} />
+          <Chart
+            options={options}
+            series={state}
+            type="rangeBar"
+            height={425}
+          />
         </div>
       </div>
     </>
